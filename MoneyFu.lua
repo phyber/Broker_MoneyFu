@@ -56,6 +56,9 @@ local function GetOptions(uiTypes, uiName, appName)
 					desc = L["Character Specific Cashflow"],
 					type = "toggle",
 					order = 100,
+					get = function(info)
+						return not db[info[#info]]
+					end,
 				},
 				showPerHour = {
 					name = L["Per Hour Cashflow"],
@@ -225,10 +228,50 @@ function Broker_MoneyFu:DrawTooltip()
 		-- Yesterday
 		tooltip:AddLine(" ")
 		tooltip:AddLine(HONOR_YESTERDAY, "Amount", "Per Hour")
+		tooltip:AddLine(
+			ColourText("Gained", YELLOW),
+			func(abacus, gained[self.lastTime - 1], true),
+			func(abacus, gained[self.lastTime - 1] / time[self.lastTime - 1] * 3600, true)
+		)
+		tooltip:AddLine(
+			ColourText("Spent", YELLOW),
+			func(abacus, spent[self.lastTime - 1], true),
+			func(abacus, spent[self.lastTime - 1] / time[self.lastTime - 1] * 3600, true)
+		)
+		local profit = gained[self.lastTime - 1] - spent[self.lastTime - 1]
+		tooltip:AddLine(
+			ColourText("Profit", YELLOW),
+			func(abacus, profit, true, true),
+			func(abacus, profit / time[self.lastTime - 1] * 3600, true, true)
+		)
 
 		-- This week
+		local weekGained = 0
+		local weekSpent = 0
+		local weekTime = 0
+		for i = self.lastTime - 6, self.lastTime do
+			weekGained = weekGained + gained[i]
+			weekSpent = weekSpent + spent[i]
+			weekTime = weekTime + time[i]
+		end
 		tooltip:AddLine(" ")
 		tooltip:AddLine("This Week", "Amount", "Per Hour")
+		tooltip:AddLine(
+			ColourText("Gained", YELLOW),
+			func(abacus, weekSpent, true),
+			func(abacus, weekSpent / weekTime * 3600, true)
+		)
+		tooltip:AddLine(
+			ColourText("Spent", YELLOW),
+			func(abacus, weekSpent, true),
+			func(abacus, weekSpent / weekTime * 3600, true)
+		)
+		local profit = weekGained - weekSpent
+		tooltip:AddLine(
+			ColourText("Profit", YELLOW),
+			func(abacus, profit, true, true),
+			func(abacus, profit / weekTime * 3600, true, true)
+		)
 	end
 
 	-- Character gold totals.
