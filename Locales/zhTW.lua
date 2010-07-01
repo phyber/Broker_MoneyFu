@@ -11,7 +11,7 @@ L["TEXT_GAINED"] = "收入"
 L["TEXT_SPENT"] = "支出"
 L["TEXT_AMOUNT"] = "總計"
 L["TEXT_PER_HOUR"] = "每小時"
-L["This Week"] = "本週", -- edit
+L["This Week"] = "本週"
 
 L["ARGUMENT_RESETSESSION"] = "resetSession"
 

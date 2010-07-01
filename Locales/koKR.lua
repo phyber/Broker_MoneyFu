@@ -11,7 +11,7 @@ L["TEXT_GAINED"] = "획득량"
 L["TEXT_SPENT"] = "소모량"
 L["TEXT_AMOUNT"] = "금액"
 L["TEXT_PER_HOUR"] = "시간당"
-L["This Week"] = "이번 주", -- edit
+L["This Week"] = "이번 주"
 
 L["ARGUMENT_RESETSESSION"] = "접속초기화"
 
