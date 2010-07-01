@@ -4,8 +4,8 @@ local abacus = LibStub("LibAbacus-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Broker_MoneyFu")
 local dataobj = LDB:NewDataObject("Broker_MoneyFu", {
 	type = "data source",
-	text = "MoneyFu",
-	icon = "Interface\\Broker_MoneyFu\\icon",
+	text = "???",
+	icon = "Interface\\Broker_MoneyFu\\icon.tga",
 })
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
@@ -40,6 +40,7 @@ local function GetOptions(uiTypes, uiName, appName)
 			get = function(info) return db[info[#info]] end,
 			set = function(info, value)
 				db[info[#info]] = value
+				Broker_MoneyFu:UpdateData()
 			end,
 			args = {
 				bmfudesc = {
@@ -114,13 +115,16 @@ local function GetOptions(uiTypes, uiName, appName)
 	end
 end
 
-function Broker_MoneyFu:SetStyle(style)
-	style = string.upper(style)
-	if style ~= "GRAPHICAL" and style ~= "FULL" and style ~= "SHORT" and style ~= "CONDENSED" then
-		style = "GRAPHICAL"
+local function getAbacus()
+	local func
+	if db.style == "CONDENSED" then
+		func = abacus.FormatMoneyCondensed
+	elseif db.style == "SHORT" then
+		func = abacus.FormatMoneyShort
+	else
+		func = abacus.FormatMoneyFull
 	end
-	self.db.profile.style = style
-	self:UpdateText()
+	return func
 end
 
 function Broker_MoneyFu:ResetSession()
@@ -148,15 +152,7 @@ function Broker_MoneyFu:DrawTooltip()
 	self.savedTime = now
 
 	local linenum
-	local func
-	-- Which abacus style are we using?
-	if self.db.profile.style == "CONDENSED" then
-		func = abacus.FormatMoneyCondensed
-	elseif self.db.profile.style == "SHORT" then
-		func = abacus.FormatMoneyShort
-	else
-		func = abacus.FormatMoneyFull
-	end
+	local func = getAbacus()
 
 	-- Header
 	tooltip:AddLine(GetAddOnMetadata("Broker_MoneyFu", "Title"))
@@ -176,6 +172,7 @@ function Broker_MoneyFu:DrawTooltip()
 			func(abacus, self.spent, true),
 			func(abacus, self.spent / (now - self.sessionTime) * 3600)
 		)
+		local profit = self.gained - self.spent
 		tooltip:AddLine(
 			"Profit",
 			func(abacus, profit, true, true),
@@ -201,17 +198,23 @@ function Broker_MoneyFu:DrawTooltip()
 	-- Character gold totals.
 	
 	-- Hints
+
+	-- Show it
+	--local p, rT, rP, x, y = tooltip:GetPoint()
+	--tooltip:ClearAllPoints()
+	--tooltip:SetPoint(p, rT, rP, -(tooltip:GetWidth() / 2), y)
+	tooltip:Show()
 end
 
 function dataobj:OnEnter()
 	-- Setup the tooltip
 	if not LQT:IsAcquired("Broker_MoneyFu") then
-		local simple = self.db.profile.simpleTooltip
+		local perHour = db.showPerHour
 		tooltip = LQT:Acquire("Broker_MoneyFuTip",
-			simple and 2 or 3,
+			perHour and 3 or 2,
 			"LEFT",
-			simple and "RIGHT" or "CENTER",
-			not simple and "RIGHT" or nil
+			perHour and "CENTER" or "RIGHT",
+			perHour and "RIGHT" or nil
 		)
 	end
 	tooltip:Clear()
@@ -227,8 +230,14 @@ function Broker_MoneyFu:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("Broker_MoneyFu", defaults, true)
 	db = self.db.profile
 
-	self.hasIcon = true
-	self.canHideText = true
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Broker_MoneyFu-General", GetOptions)
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Broker_MoneyFu-Purge", GetOptions)
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Broker_MoneyFu-General", GetAddOnMetadata("Broker_MoneyFu", "Title"))
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Broker_MoneyFu-Purge", "Purge", GetAddOnMetadata("Broker_MoneyFu", "Title"))
+
+	--self.hasIcon = true
+	--self.canHideText = true
+	--[[
 	local frame = self.frame
 	local icon = frame:CreateTexture("MoneyFuFrameIcon", "ARTWORK")
 	icon:SetWidth(16)
@@ -280,6 +289,7 @@ function Broker_MoneyFu:OnInitialize()
 	copperIcon:SetPoint("RIGHT", frame, "RIGHT")
 	silverIcon:SetPoint("RIGHT", copperText, "LEFT")
 	goldIcon:SetPoint("RIGHT", silverText, "LEFT")
+	]]
 end
 
 local function GetToday(self)
@@ -347,15 +357,15 @@ function Broker_MoneyFu:OnEnable()
 	self.savedTime = time()
 
 	if self.db.profile.style == "GRAPHICAL" then
-		self:HideIcon()
-		self.iconFrame:Hide()
+		--self:HideIcon()
+		--self.iconFrame:Hide()
 		self.hasIcon = false
 	end
-	self:RegisterEvent("PLAYER_MONEY", "Update")
-	self:RegisterEvent("PLAYER_TRADE_MONEY", "Update")
-	self:RegisterEvent("TRADE_MONEY_CHANGED", "Update")
-	self:RegisterEvent("SEND_MAIL_MONEY_CHANGED", "Update")
-	self:RegisterEvent("SEND_MAIL_COD_CHANGED", "Update")
+	self:RegisterEvent("PLAYER_MONEY", "UpdateData")
+	self:RegisterEvent("PLAYER_TRADE_MONEY", "UpdateData")
+	self:RegisterEvent("TRADE_MONEY_CHANGED", "UpdateData")
+	self:RegisterEvent("SEND_MAIL_MONEY_CHANGED", "UpdateData")
+	self:RegisterEvent("SEND_MAIL_COD_CHANGED", "UpdateData")
 
 	self:Hook("OpenCoinPickupFrame", true)
 
@@ -364,7 +374,8 @@ function Broker_MoneyFu:OnEnable()
 	MoneyFuFrameSilverIcon:ClearAllPoints()
 	MoneyFuFrameSilverIcon:SetPoint("RIGHT", MoneyFuFrameCopperText, "LEFT", 0, -1)
 
-	self:ScheduleRepeatingEvent("MoneyFuUpdater", self.UpdateTooltip, 60, self)
+	--self:ScheduleRepeatingEvent("MoneyFuUpdater", self.UpdateTooltip, 60, self)
+	dataobj.text = getAbacus()(abacus, self.initialMoney, true)
 end
 
 function Broker_MoneyFu:UpdateData()
@@ -409,6 +420,9 @@ function Broker_MoneyFu:UpdateData()
 	self.db.char.time[today] = self.db.char.time[today] + now - self.savedTime
 	self.db.realm.time[today] = self.db.realm.time[today] + now - self.savedTime
 	self.savedTime = now
+
+	-- Display cashola on tooltip
+	dataobj.text = getAbacus()(abacus, current, true)
 end
 
 function Broker_MoneyFu:UpdateText()
@@ -689,7 +703,7 @@ function Broker_MoneyFu:OnTooltipUpdate()
 
 	tablet:SetHint(L["HINT"])
 
-	self:ScheduleRepeatingEvent("MoneyFuUpdater", self.UpdateTooltip, 60, self)
+	--self:ScheduleRepeatingEvent("MoneyFuUpdater", self.UpdateTooltip, 60, self)
 end
 
 local function getsecond(_, value)
