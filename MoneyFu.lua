@@ -147,7 +147,7 @@ function Broker_MoneyFu:ResetSession()
 end
 
 function Broker_MoneyFu:HideTooltip()
-	if MouseIfOver(tooltip) then
+	if MouseIsOver(tooltip) then
 		return
 	end
 	tooltip:Hide()
@@ -338,6 +338,7 @@ function dataobj:OnClick(button)
 				CoinPickupFrame:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT")
 			end
 		end
+		Broker_MoneyFu:HideTooltip()
 	elseif button == "RightButton" then
 		InterfaceOptionsFrame_OpenToCategory(GetAddOnMetadata("Broker_MoneyFu", "Title"))
 	end
