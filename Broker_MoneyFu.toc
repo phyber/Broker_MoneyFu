@@ -9,8 +9,8 @@
 ## Author: phyber
 ## OptionalDeps: Ace3, LibAbacus-3.0
 ## X-Embeds: LibAbacus-3.0
-## SavedVariables: MoneyFuDB
-## SavedVariablesPerCharacter: MoneyFuCharDB
+## SavedVariables: Broker_MoneyFuDB
+## SavedVariablesPerCharacter: Broker_MoneyFuCharDB
 ## Version: @project-version@
 ## X-Category: Interface Enhancements
 
