@@ -468,9 +468,10 @@ function Broker_MoneyFu:OnEnable()
 	self:RegisterEvent("SEND_MAIL_MONEY_CHANGED", "UpdateData")
 	self:RegisterEvent("SEND_MAIL_COD_CHANGED", "UpdateData")
 
-	self:Hook("OpenCoinPickupFrame", true)
+	self:RawHook("OpenCoinPickupFrame", true)
 
 	--self:ScheduleRepeatingEvent("MoneyFuUpdater", self.UpdateTooltip, 60, self)
+	self:UpdateData()
 	dataobj.text = getAbacus()(abacus, self.initialMoney, true)
 end
 
