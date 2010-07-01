@@ -6,9 +6,6 @@ local dataobj = LDB:NewDataObject("Broker_MoneyFu", {
 	type = "data source",
 	text = "???",
 	icon = "Interface\\AddOns\\Broker_MoneyFu\\icon.tga",
-	OnClick = function(display, button)
-		Broker_MoneyFu.OnClick(Broker_MoneyFu, display, button)
-	end,
 })
 local YELLOW = { r = 1, g = 1, b = 0 }
 local GREEN = { r = 0, g = 1, b = 0 }
@@ -312,7 +309,7 @@ local function getsecond(_, value)
 	return value
 end
 
-function Broker_MoneyFu:OnClick(display, button)
+function dataobj:OnClick(button)
 	if button == "LeftButton" then
 		local money = GetMoney()
 		local multiplier
@@ -323,22 +320,22 @@ function Broker_MoneyFu:OnClick(display, button)
 		else
 			multiplier = 10000
 		end
-		display.moneyType = "PLAYER"
-		OpenCoinPickupFrame(multiplier, money, display)
-		display.hasPickup = 1
+		self.moneyType = "PLAYER"
+		OpenCoinPickupFrame(multiplier, money, self)
+		self.hasPickup = 1
 
 		CoinPickupFrame:ClearAllPoints()
-		if display:GetCenter() < GetScreenWidth() / 2 then
-			if getsecond(display:GetCenter()) < GetScreenHeight() / 2 then
-				CoinPickupFrame:SetPoint("BOTTOMLEFT", display, "TOPLEFT")
+		if self:GetCenter() < GetScreenWidth() / 2 then
+			if getsecond(self:GetCenter()) < GetScreenHeight() / 2 then
+				CoinPickupFrame:SetPoint("BOTTOMLEFT", self, "TOPLEFT")
 			else
-				CoinPickupFrame:SetPoint("TOPLEFT", display, "BOTTOMLEFT")
+				CoinPickupFrame:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
 			end
 		else
-			if getsecond(display:GetCenter()) < GetScreenHeight() / 2 then
-				CoinPickupFrame:SetPoint("BOTTOMRIGHT", display, "TOPRIGHT")
+			if getsecond(self:GetCenter()) < GetScreenHeight() / 2 then
+				CoinPickupFrame:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT")
 			else
-				CoinPickupFrame:SetPoint("TOPRIGHT", display, "BOTTOMRIGHT")
+				CoinPickupFrame:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT")
 			end
 		end
 	elseif button == "RightButton" then
