@@ -7,8 +7,17 @@ local dataobj = LDB:NewDataObject("Broker_MoneyFu", {
 	text = "???",
 	icon = "Interface\\AddOns\\Broker_MoneyFu\\icon.tga",
 })
+local icon = LibStub("LibDBIcon-1.0")
 local YELLOW = { r = 1, g = 1, b = 0 }
 local GREEN = { r = 0, g = 1, b = 0 }
+-- Lovely functions
+local math = math
+local next = next
+local pairs = pairs
+local table = table
+local string = string
+local tonumber = tonumber
+local GetAddOnMetadata = GetAddOnMetadata
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
 local self, Broker_MoneyFu = Broker_MoneyFu, Broker_MoneyFu
@@ -20,6 +29,9 @@ local defaults = {
 		trackByRealm = true,
 		simpleTooltip = false,
 		showPerHour = true,
+		minimap = {
+			hide = false,
+		},
 	},
 	char = {
 		spent = {},
@@ -53,7 +65,7 @@ local function GetOptions(uiTypes, uiName, appName)
 				-- Character specific cashflow
 				trackByRealm = {
 					name = L["Character Specific Cashflow"],
-					desc = L["Character Specific Cashflow"],
+					desc = L["Show character-specific cashflow"],
 					type = "toggle",
 					order = 100,
 					get = function(info)
@@ -62,28 +74,42 @@ local function GetOptions(uiTypes, uiName, appName)
 				},
 				showPerHour = {
 					name = L["Per Hour Cashflow"],
-					desc = L["Per Hour Cashflow"],
+					desc = L["Show per hour cashflow"],
 					type = "toggle",
 					order = 200,
 				},
 				simpleTooltip = {
-					name = L["Simple Tooltip"],
-					desc = L["Simple Tooltip"],
+					name = L["Simplified Tooltip"],
+					desc = L["Simplified Tooltip"],
 					type = "toggle",
 					order = 300,
 				},
 				style = {
 					name = L["Style"],
-					desc = L["Style"],
+					desc = L["Choose your style"],
 					type = "select",
 					order = 400,
 					values = {
-						GRAPHICAL = "Graphical",
-						FULL = "Full",
-						SHORT = "Short",
-						CONDENSED = "Condensed",
+						GRAPHICAL = L["Graphical"],
+						FULL = L["Full"],
+						SHORT = L["Short"],
+						CONDENSED = L["Condensed"],
 					},
 					style = "dropdown",
+				},
+				minimap = {
+					name = L["Minimap Icon"],
+					desc = L["Toggle minimap icon"],
+					type = "toggle",
+					get = function() return not db.minimap.hide end,
+					set = function()
+						db.minimap.hide = not db.minimap.hide
+						if db.minimap.hide then
+							icon:Hide("Broker_MoneyFu")
+						else
+							icon:Show("Broker_MoneyFu")
+						end
+					end,
 				},
 			}
 		}
@@ -93,16 +119,16 @@ local function GetOptions(uiTypes, uiName, appName)
 		-- Base menu
 		local options = {
 			type = "group",
-			name = "Purge",
+			name = L["Purge"],
 			args = {
 				bmfupdesc = {
 					type = "description",
 					order = 0,
-					name = "Purge Character",
+					name = L["Purge Character"],
 				},
 				purge = {
-					name = "Characters",
-					desc = "Select a character to purge",
+					name = L["Characters"],
+					desc = L["Select a character to purge"],
 					type = "select",
 					order = 100,
 					values = Broker_MoneyFu.db.realm.chars,
@@ -177,20 +203,20 @@ function Broker_MoneyFu:DrawTooltip()
 	-- Gold earned stats.
 	if not self.db.profile.simpleTooltip then
 		-- This session
-		tooltip:AddLine("This session", "Amount", "Per hour")
+		tooltip:AddLine(L["This session"], L["Amount"], L["Per hour"])
 		tooltip:AddLine(
-			ColourText("Gained", YELLOW),
+			L["|cffffff00Gained|r"],
 			func(abacus, self.gained, true),
 			func(abacus, self.gained / (now - self.sessionTime) * 3600, true)
 		)
 		tooltip:AddLine(
-			ColourText("Spent", YELLOW),
+			L["|cffffff00Spent|r"],
 			func(abacus, self.spent, true),
 			func(abacus, self.spent / (now - self.sessionTime) * 3600)
 		)
 		local profit = self.gained - self.spent
 		tooltip:AddLine(
-			ColourText("Profit", YELLOW),
+			L["|cffffff00Profit|r"],
 			func(abacus, profit, true, true),
 			func(abacus, profit / (now - self.sessionTime) * 3600, true, true)
 		)
@@ -207,40 +233,40 @@ function Broker_MoneyFu:DrawTooltip()
 		local time = t.time
 
 		tooltip:AddLine(" ")
-		tooltip:AddLine(HONOR_THIS_SESSION, "Amount", "Per Hour")
+		tooltip:AddLine(HONOR_THIS_SESSION, L["Amount"], L["Per hour"])
 		tooltip:AddLine(
-			ColourText("Gained", YELLOW),
+			L["|cffffff00Gained|r"],
 			func(abacus, gained[self.lastTime], true),
 			func(abacus, gained[self.lastTime] / time[self.lastTime] * 3600, true)
 		)
 		tooltip:AddLine(
-			ColourText("Spent", YELLOW),
+			L["|cffffff00Spent|r"],
 			func(abacus, spent[self.lastTime], true),
 			func(abacus, spent[self.lastTime] / time[self.lastTime] * 3600, true)
 		)
 		local profit = gained[self.lastTime] - spent[self.lastTime]
 		tooltip:AddLine(
-			ColourText("Profit", YELLOW),
+			L["|cffffff00Profit|r"],
 			func(abacus, profit, true, true),
 			func(abacus, profit / time[self.lastTime] * 3600, true, true)
 		)
 
 		-- Yesterday
 		tooltip:AddLine(" ")
-		tooltip:AddLine(HONOR_YESTERDAY, "Amount", "Per Hour")
+		tooltip:AddLine(HONOR_YESTERDAY, L["Amount"], L["Per hour"])
 		tooltip:AddLine(
-			ColourText("Gained", YELLOW),
+			L["|cffffff00Gained|r"],
 			func(abacus, gained[self.lastTime - 1], true),
 			func(abacus, gained[self.lastTime - 1] / time[self.lastTime - 1] * 3600, true)
 		)
 		tooltip:AddLine(
-			ColourText("Spent", YELLOW),
+			L["|cffffff00Spent|r"],
 			func(abacus, spent[self.lastTime - 1], true),
 			func(abacus, spent[self.lastTime - 1] / time[self.lastTime - 1] * 3600, true)
 		)
 		local profit = gained[self.lastTime - 1] - spent[self.lastTime - 1]
 		tooltip:AddLine(
-			ColourText("Profit", YELLOW),
+			L["|cffffff00Profit|r"],
 			func(abacus, profit, true, true),
 			func(abacus, profit / time[self.lastTime - 1] * 3600, true, true)
 		)
@@ -255,20 +281,20 @@ function Broker_MoneyFu:DrawTooltip()
 			weekTime = weekTime + time[i]
 		end
 		tooltip:AddLine(" ")
-		tooltip:AddLine("This Week", "Amount", "Per Hour")
+		tooltip:AddLine(L["This Week"], L["Amount"], L["Per hour"])
 		tooltip:AddLine(
-			ColourText("Gained", YELLOW),
+			L["|cffffff00Gained|r"],
 			func(abacus, weekSpent, true),
 			func(abacus, weekSpent / weekTime * 3600, true)
 		)
 		tooltip:AddLine(
-			ColourText("Spent", YELLOW),
+			L["|cffffff00Spent|r"],
 			func(abacus, weekSpent, true),
 			func(abacus, weekSpent / weekTime * 3600, true)
 		)
 		local profit = weekGained - weekSpent
 		tooltip:AddLine(
-			ColourText("Profit", YELLOW),
+			L["|cffffff00Profit|r"],
 			func(abacus, profit, true, true),
 			func(abacus, profit / weekTime * 3600, true, true)
 		)
@@ -290,15 +316,15 @@ function Broker_MoneyFu:DrawTooltip()
 
 		tooltip:AddLine(" ")
 		tooltip:AddLine(
-			"Characters",
-			db.showPerHour and " " or "Amount",
-			db.showPerHour and "Amount" or " "
+			L["Characters"],
+			db.showPerHour and " " or L["Amount"],
+			db.showPerHour and L["Amount"] or " "
 		)
 		for _, name in pairs(t) do
 			local money = self.db.realm.chars[name]
 			local moneystr = func(abacus, money, true)
 			tooltip:AddLine(
-				ColourText(name, YELLOW),
+				string.format("|cffffff00%s|r", name),
 				db.showPerHour and " " or moneystr,
 				db.showPerHour and moneystr or " "
 			)
@@ -312,7 +338,7 @@ function Broker_MoneyFu:DrawTooltip()
 	-- Total
 	tooltip:AddLine(" ")
 	tooltip:AddLine(
-		"Total",
+		L["Total"],
 		db.showPerHour and " " or func(abacus, total, true),
 		db.showPerHour and func(abacus, total, true) or " "
 	)
@@ -392,6 +418,8 @@ function Broker_MoneyFu:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("Broker_MoneyFuDB", defaults, true)
 	db = self.db.profile
 
+	-- Minimap icon
+	icon:Register("Broker_MoneyFu", dataobj, db.minimap)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Broker_MoneyFu-General", GetOptions)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Broker_MoneyFu-Purge", GetOptions)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Broker_MoneyFu-General", GetAddOnMetadata("Broker_MoneyFu", "Title"))
