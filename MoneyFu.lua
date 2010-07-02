@@ -8,8 +8,12 @@ local dataobj = LDB:NewDataObject("Broker_MoneyFu", {
 	icon = "Interface\\AddOns\\Broker_MoneyFu\\icon.tga",
 })
 local icon = LibStub("LibDBIcon-1.0")
-local YELLOW = { r = 1, g = 1, b = 0 }
-local GREEN = { r = 0, g = 1, b = 0 }
+local NFC = string.format(
+	"|cff%2x%2x%2x%%s|r",
+	NORMAL_FONT_COLOR.r * 255,
+	NORMAL_FONT_COLOR.g * 255,
+	NORMAL_FONT_COLOR.b * 255
+)
 -- Lovely functions
 local math = math
 local next = next
@@ -164,10 +168,6 @@ local function getAbacus()
 	return func
 end
 
-local function ColourText(text, c)
-	return string.format("|cff%2x%2x%2x%s|r", c.r * 255, c.g * 255, c.b * 255, text)
-end
-
 function Broker_MoneyFu:ResetSession()
 	self.initialMoney = GetMoney()
 	self.sessionTime = time()
@@ -194,10 +194,9 @@ function Broker_MoneyFu:DrawTooltip()
 
 	local linenum
 	local func = getAbacus()
-	local NFC = NORMAL_FONT_COLOR
 
 	-- Header
-	tooltip:AddLine(ColourText(GetAddOnMetadata("Broker_MoneyFu", "Title"), NFC))
+	tooltip:AddLine(NFC:format(GetAddOnMetadata("Broker_MoneyFu", "Title")))
 	tooltip:AddLine(" ")
 
 	-- Gold earned stats.
