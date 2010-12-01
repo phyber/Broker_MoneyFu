@@ -283,8 +283,8 @@ function Broker_MoneyFu:DrawTooltip()
 		tooltip:AddLine(L["This Week"], L["Amount"], L["Per hour"])
 		tooltip:AddLine(
 			L["|cffffff00Gained|r"],
-			func(abacus, weekSpent, true),
-			func(abacus, weekSpent / weekTime * 3600, true)
+			func(abacus, weekGained, true),
+			func(abacus, weekGained / weekTime * 3600, true)
 		)
 		tooltip:AddLine(
 			L["|cffffff00Spent|r"],
