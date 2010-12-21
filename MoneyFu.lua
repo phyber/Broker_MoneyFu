@@ -135,17 +135,23 @@ local function GetOptions(uiTypes, uiName, appName)
 					desc = L["Select a character to purge"],
 					type = "select",
 					order = 100,
-					values = Broker_MoneyFu.db.realm.chars,
-					style = "dropdown",
+					set = function(info, value)
+						Broker_MoneyFu.db.realm.chars[value] = nil
+					end,
+					confirm = function(info, value)
+						return string.format("Are you sure you wish to delete '%s'?", value)
+					end,
+					values = function()
+						local t = {}
+						for name, _ in pairs(Broker_MoneyFu.db.realm.chars) do
+							t[name] = name
+						end
+						return t
+					end,
+					style = "radio",
 				},
 			}
 		}
-		-- Fill with characters
-		--[[for name, _ in pairs(self.db.realm.chars) do
-			if name ~= UnitName("player") then
-				options.args.purge.values[name] = name
-			end
-		end]]
 		return options
 	end
 end
