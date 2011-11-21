@@ -1,4 +1,4 @@
-package-as: Broker_BagFu
+package-as: Broker_MoneyFu
 
 externals:
 	Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
