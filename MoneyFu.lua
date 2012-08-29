@@ -17,11 +17,16 @@ local NFC = string.format(
 -- Lovely functions
 local math = math
 local next = next
+local type = type
 local pairs = pairs
 local table = table
 local string = string
 local tonumber = tonumber
 local GetAddOnMetadata = GetAddOnMetadata
+local string_len = string.len
+local string_gmatch = string.gmatch
+local string_reverse = string.reverse
+local math_mod = math.fmod
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
 local self, Broker_MoneyFu = Broker_MoneyFu, Broker_MoneyFu
@@ -36,6 +41,7 @@ local defaults = {
 		minimap = {
 			hide = false,
 		},
+		commify = true,
 	},
 	char = {
 		spent = {},
@@ -174,6 +180,23 @@ local function getAbacus()
 	return func
 end
 
+local function commify(num)
+	if not db.commify or string_len(tostring(num)) <= 3 or type(num) ~= "number" then
+		return num
+	end
+	local str = ""
+	local count = 0
+	for d in string_gmatch(string_reverse(tostring(num)), "%d") do
+		if count ~= 0 and math_mod(count, 3) == 0 then
+			str = str .. "," .. d
+		else
+			str = str .. d
+		end
+		count = count + 1
+	end
+	return string_reverse(str)
+end
+
 function Broker_MoneyFu:ResetSession()
 	self.initialMoney = GetMoney()
 	self.sessionTime = time()
@@ -226,7 +249,6 @@ function Broker_MoneyFu:DrawTooltip()
 			func(abacus, profit / (now - self.sessionTime) * 3600, true, true)
 		)
 		
-		-- Today
 		local t
 		if self.db.profile.trackByRealm then
 			t = self.db.realm
@@ -237,18 +259,22 @@ function Broker_MoneyFu:DrawTooltip()
 		local spent = t.spent
 		local time = t.time
 
+		-- Today
 		tooltip:AddLine(" ")
 		tooltip:AddLine(HONOR_THIS_SESSION, L["Amount"], L["Per hour"])
+		-- Gained
 		tooltip:AddLine(
 			L["|cffffff00Gained|r"],
 			func(abacus, gained[self.lastTime], true),
 			func(abacus, gained[self.lastTime] / time[self.lastTime] * 3600, true)
 		)
+		-- Spent
 		tooltip:AddLine(
 			L["|cffffff00Spent|r"],
 			func(abacus, spent[self.lastTime], true),
 			func(abacus, spent[self.lastTime] / time[self.lastTime] * 3600, true)
 		)
+		-- Profit
 		local profit = gained[self.lastTime] - spent[self.lastTime]
 		tooltip:AddLine(
 			L["|cffffff00Profit|r"],
@@ -259,16 +285,22 @@ function Broker_MoneyFu:DrawTooltip()
 		-- Yesterday
 		tooltip:AddLine(" ")
 		tooltip:AddLine(HONOR_YESTERDAY, L["Amount"], L["Per hour"])
+
+		-- Gained
 		tooltip:AddLine(
 			L["|cffffff00Gained|r"],
 			func(abacus, gained[self.lastTime - 1], true),
 			func(abacus, gained[self.lastTime - 1] / time[self.lastTime - 1] * 3600, true)
 		)
+
+		--Spent
 		tooltip:AddLine(
 			L["|cffffff00Spent|r"],
 			func(abacus, spent[self.lastTime - 1], true),
 			func(abacus, spent[self.lastTime - 1] / time[self.lastTime - 1] * 3600, true)
 		)
+
+		-- Profit
 		local profit = gained[self.lastTime - 1] - spent[self.lastTime - 1]
 		tooltip:AddLine(
 			L["|cffffff00Profit|r"],
@@ -287,16 +319,22 @@ function Broker_MoneyFu:DrawTooltip()
 		end
 		tooltip:AddLine(" ")
 		tooltip:AddLine(L["This Week"], L["Amount"], L["Per hour"])
+
+		-- Gained
 		tooltip:AddLine(
 			L["|cffffff00Gained|r"],
 			func(abacus, weekGained, true),
 			func(abacus, weekGained / weekTime * 3600, true)
 		)
+
+		-- Spent
 		tooltip:AddLine(
 			L["|cffffff00Spent|r"],
 			func(abacus, weekSpent, true),
 			func(abacus, weekSpent / weekTime * 3600, true)
 		)
+
+		-- Profit
 		local profit = weekGained - weekSpent
 		tooltip:AddLine(
 			L["|cffffff00Profit|r"],
