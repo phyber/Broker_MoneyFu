@@ -79,7 +79,11 @@ local function GetOptions(uiTypes, uiName, appName)
 					type = "toggle",
 					order = 100,
 					get = function(info)
-						return not db[info[#info]]
+						return not db.trackByRealm
+					end,
+					set = function(info, value)
+						db.trackByRealm = not db.trackByRealm
+						Broker_MoneyFu:UpdateData()
 					end,
 				},
 				showPerHour = {
