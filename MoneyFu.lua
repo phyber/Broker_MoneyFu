@@ -467,6 +467,8 @@ function Broker_MoneyFu:OnInitialize()
 
 	-- Minimap icon
 	icon:Register("Broker_MoneyFu", dataobj, db.minimap)
+
+	-- Options
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Broker_MoneyFu-General", GetOptions)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Broker_MoneyFu-Purge", GetOptions)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Broker_MoneyFu-General", GetAddOnMetadata("Broker_MoneyFu", "Title"))
