@@ -10,8 +10,8 @@
 ## Notes-zhCN: 记录你所在服务器上所有角色的金钱状况.
 ## Notes-zhTW: 持續追縱目前角色的金錢狀況，同時也可以顯示此伺服器上其他角色的金錢狀況。
 ## Author: phyber
-## OptionalDeps: Ace3, LibAbacus-3.0
-## X-Embeds: LibAbacus-3.0
+## OptionalDeps: Ace3, LibAbacus-3.0, LibQTip-1.0
+## X-Embeds: LibAbacus-3.0, LibQTip-1.0
 ## SavedVariables: Broker_MoneyFuDB
 ## SavedVariablesPerCharacter: Broker_MoneyFuCharDB
 ## Version: @project-version@
