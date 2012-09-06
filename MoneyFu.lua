@@ -27,6 +27,7 @@ local string_len = string.len
 local string_gmatch = string.gmatch
 local string_reverse = string.reverse
 local math_mod = math.fmod
+local math_huge = math.huge
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
 local self, Broker_MoneyFu = Broker_MoneyFu, Broker_MoneyFu
@@ -167,6 +168,9 @@ local function GetOptions(uiTypes, uiName, appName)
 end
 
 local function CoinString(_, value)
+	if value == math_huge then
+		value = 0
+	end
 	return GetCoinTextureString(value)
 end
 
