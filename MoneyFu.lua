@@ -421,6 +421,11 @@ function dataobj:OnEnter()
 	Broker_MoneyFu:DrawTooltip()
 end
 
+function dataobj:OnLeave()
+	LQT:Release(tooltip)
+	tooltip = nil
+end
+
 local function getsecond(_, value)
 	return value
 end
