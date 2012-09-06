@@ -1,33 +1,50 @@
+-- Deutsche/German
+--				      lower		 upper
+-- a umlaut	  \195\164	 \195\132
+-- o umlaut	  \195\182	 \195\150
+-- u umlaut	  \195\188	 \195\156
+-- sharp s	  \195\159
+-- ä = \195\164 -- Ä = \195\132 
+-- ö = \195\182 -- Ö = \195\150 
+-- ü = \195\188 -- Ü = \195\156 
+-- ß = \195\159
+
 local L = LibStub("AceLocale-3.0"):NewLocale("Broker_MoneyFu", "deDE")
 if not L then return end
 --
-L["NAME"] = "FuBar - MoneyFu"
-L["DESCRIPTION"] = "F\195\188hrt Buch \195\188ber Eure Reicht\195\188mer und die Eurer Charaktere auf diesem Realm."
-L["COMMANDS"] = {"/monfu", "/moneyfu"}
-L["TEXT_TOTAL"] = "Gesamt"
-L["TEXT_SESSION_RESET"] = "Sitzung zur\195\188cksetzen"
-L["TEXT_THIS_SESSION"] = "Diese Sitzung"
-L["TEXT_GAINED"] = "Eingenommen"
-L["TEXT_SPENT"] = "Ausgegeben"
-L["TEXT_AMOUNT"] = "Geldmenge"
-L["TEXT_PER_HOUR"] = "Pro Stunde"
+L["Total"] = "Gesamt"
+L["Session reset"] = "Sitzung zur\195\188cksetzen"
+L["This session"] = "Diese Sitzung"
+L["Per hour"] = "Pro Stunde"
 L["This Week"] = "Diese Woche"
+-- Yellow texts
+L["|cffffff00Gained|r"] = "Eingenommen"
+L["|cffffff00Spent|r"] = "Ausgegeben"
+L["|cffffff00Profit|r"] = "Gewinn"
+L["|cffffff00Loss|r"] = "Verlust"
 
-L["ARGUMENT_RESETSESSION"] = "resetSession"
+L["Amount"] = "Geldmenge"
+L["Reset Session"] = "Sitzung zur\195\188cksetzen"
+L["Character Specific Cashflow"] = "Charakterspezifischen Geldfluss anzeigen"
+L["Show character-specific cashflow"] = "Zeige Charakterspezifischen Geldfluss"
+L["Purge"] = "L\195\182schen"
+L["Purge Character"] = "Charakter L\195\182schen"
+L["Select a character to purge"] = "W\195\164hle einen Charakter zum L\195\182schen"
+L["Style"] = "Stil"
+L["Choose your style"] = "W\195\164hle deinen Stil"
+L["Graphical"] = "Anzeige mit M\195\188nzsymbolen"
+L["Full"] = "Ausf\195\188hrlicher Stil"
+L["Short"] = "Kurzstil"
+L["Condensed"] = "Komprimierter Stil"
+L["Simplified Tooltip"] = "Vereinfachter Tooltip"
+L["Per Hour Cashflow"] = "Einnahme pro Stunde anzeigen"
+L["Show per hour cashflow"] = "Zeige Einnahme pro Stunde"
 
-L["MENU_RESET_SESSION"] = "Sitzung zur\195\188cksetzen"
-L["MENU_CHARACTER_SPECIFIC_CASHFLOW"] = "Charakterspezifischen Geldfluss anzeigen"
-L["MENU_PURGE"] = "L\195\182schen"
-L["MENU_SHOW_GRAPHICAL"] = "Anzeige mit M\195\188nzsymbolen"
-L["MENU_SHOW_FULL"] = "Ausf\195\188hrlicher Stil"
-L["MENU_SHOW_SHORT"] = "Kurzstil"
-L["MENU_SHOW_CONDENSED"] = "Komprimierter Stil"
-L["SIMPLIFIED_TOOLTIP"] = "Vereinfachtes Tooltip"
-L["SHOW_PER_HOUR_CASHFLOW"] = "Einnahme pro Stunde anzeigen"
+L["Minimap Icon"] = "Minikarte Symbol"
+L["Toggle minimap icon"] = "Minikarte Symbol An/Aus"
 
-L["TEXT_SESSION_RESET"] = "Sitzung zur\195\188ckgesetzt."
-L["TEXT_CHARACTERS"] = "Charaktere"
-L["TEXT_PROFIT"] = "Gewinn"
-L["TEXT_LOSS"] = "Verlust"
+L["Session reset"] = "Sitzung zur\195\188ckgesetzt."
+L["Characters"] = "Charaktere"
 
-L["HINT"] = "Anklicken, um Geld aufzunehmen."
+-- Green text
+L["|cff00ff00Click to pick up money|r"] = "Anklicken, um Geld aufzunehmen."
