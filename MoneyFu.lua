@@ -295,13 +295,25 @@ function Broker_MoneyFu:DrawTooltip()
 		tooltip:AddLine(HONOR_YESTERDAY, L["Amount"], L["Per hour"])
 
 		-- Gained
+		local gainedYesterday = gained[self.lastTime - 1]
+		local gainedYesterdayPerHour = gainedYesterday / time[self.lastTime - 1] * 3600
+		if gainedYesterdayPerHour == math_huge or gainedYesterdayPerHour == -math_huge then
+			gainedYesterdayPerHour = 0
+		end
+
 		tooltip:AddLine(
 			L["|cffffff00Gained|r"],
-			func(abacus, gained[self.lastTime - 1], true),
-			func(abacus, gained[self.lastTime - 1] / time[self.lastTime - 1] * 3600, true)
+			func(abacus, gainedYesterday, true),
+			func(abacus, gainedYesterdayPerHour, true)
 		)
 
 		--Spent
+		local spentYesterday = spent[self.lastTime - 1]
+		local spentYesterdayPerHour = spentYesterday / time[self.lastTime - 1] * 3600
+		if spentYesterdayPerHour == math_huge or spentYesterdayPerHour == -math_huge then
+			spentYesterdayPerHour = 0
+		end
+
 		tooltip:AddLine(
 			L["|cffffff00Spent|r"],
 			func(abacus, spent[self.lastTime - 1], true),
@@ -310,10 +322,14 @@ function Broker_MoneyFu:DrawTooltip()
 
 		-- Profit
 		local profit = gained[self.lastTime - 1] - spent[self.lastTime - 1]
+		local profitPerHour = profit / time[self.lastTime - 1] * 3600
+		if profitPerHour == math_huge or profitPerHour == -math_huge then
+			profitPerHour = 0
+		end
 		tooltip:AddLine(
 			L["|cffffff00Profit|r"],
 			func(abacus, profit, true, true),
-			func(abacus, profit / time[self.lastTime - 1] * 3600, true, true)
+			func(abacus, profitPerHour, true, true)
 		)
 
 		-- This week
