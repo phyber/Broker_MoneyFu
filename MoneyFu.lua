@@ -243,7 +243,7 @@ function Broker_MoneyFu:DrawTooltip()
 
 		-- This Session: Gained
 		local sessionGained = self.gained
-		local sessionGainedPerHour = self.gained / (now - self.sessionTime) * 3600
+		local sessionGainedPerHour = sessionGained / (now - self.sessionTime) * 3600
 		tooltip:AddLine(
 			L["|cffffff00Gained|r"],
 			func(abacus, sessionGained, true),
@@ -261,7 +261,7 @@ function Broker_MoneyFu:DrawTooltip()
 
 		-- This Session: Profit
 		local sessionProfit = self.gained - self.spent
-		local sessionProfitPerHour = profit / (now - self.sessionTime) * 3600
+		local sessionProfitPerHour = sessionProfit / (now - self.sessionTime) * 3600
 		tooltip:AddLine(
 			L["|cffffff00Profit|r"],
 			func(abacus, sessionProfit, true, true),
