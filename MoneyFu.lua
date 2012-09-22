@@ -341,9 +341,9 @@ function Broker_MoneyFu:DrawTooltip()
 
 		-- Profit
 		local profitYesterday = gained[self.lastTime - 1] - spent[self.lastTime - 1]
-		local profitYesterdayPerHour = profit / time[self.lastTime - 1] * 3600
-		if profitPerHour == math_huge or profitPerHour == -math_huge then
-			profitPerHour = 0
+		local profitYesterdayPerHour = profitYesterday / time[self.lastTime - 1] * 3600
+		if profitYesterdayPerHour == math_huge or profitYesterdayPerHour == -math_huge then
+			profitYesterdayPerHour = 0
 		end
 		tooltip:AddLine(
 			L["|cffffff00Profit|r"],
