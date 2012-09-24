@@ -62,6 +62,7 @@ local defaults = {
 		time = {},
 	},
 	factionrealm = {
+		chars = {},
 		spent = {},
 		gained = {},
 		time = {},
@@ -165,6 +166,7 @@ local function GetOptions(uiTypes, uiName, appName)
 					order = 100,
 					set = function(info, value)
 						Broker_MoneyFu.db.realm.chars[value] = nil
+						Broker_MoneyFu.db.factionrealm.chars[value] = nil
 					end,
 					confirm = function(info, value)
 						return string.format("Are you sure you wish to delete '%s'?", value)
@@ -409,14 +411,20 @@ function Broker_MoneyFu:DrawTooltip()
 
 	-- Character gold totals.
 	local total = 0
-	if next(self.db.realm.chars) ~= UnitName("player") or next(self.db.realm.chars, UnitName("player")) then
+	local chardb
+	if self.db.trackByFaction then
+		chardb = self.db.factionrealm
+	else
+		chardb = self.db.realm
+	end
+	if next(chardb.chars) ~= UnitName("player") or next(chardb.chars, UnitName("player")) then
 		local t = {}
-		for name, _ in pairs(self.db.realm.chars) do
+		for name, _ in pairs(chardb.chars) do
 			t[#t + 1] = name
 		end
 		if not self.sort_func then
 			self.sort_func = function(a, b)
-				return self.db.realm.chars[a] < self.db.realm.chars[b]
+				return chardb.chars[a] < chardb.chars[b]
 			end
 		end
 		table.sort(t, self.sort_func)
@@ -428,7 +436,7 @@ function Broker_MoneyFu:DrawTooltip()
 			db.showPerHour and L["Amount"] or " "
 		)
 		for _, name in pairs(t) do
-			local money = self.db.realm.chars[name]
+			local money = chardb.chars[name]
 			local moneystr = func(abacus, money, true)
 			tooltip:AddLine(
 				string.format("|cffffff00%s|r", name),
@@ -439,7 +447,7 @@ function Broker_MoneyFu:DrawTooltip()
 		end
 		t = nil
 	else
-		total = self.db.realm.chars[UnitName("player")]
+		total = chardb.chars[UnitName("player")]
 	end
 
 	-- Total
@@ -685,6 +693,7 @@ function Broker_MoneyFu:UpdateData()
 	end
 	self.lastMoney = current
 	self.db.realm.chars[UnitName("player")] = current
+	self.db.factionrealm.chars[UnitName("player")] = current
 	local now = time()
 	if not self.savedTime then
 		self.savedTime = now
