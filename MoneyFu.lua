@@ -412,7 +412,7 @@ function Broker_MoneyFu:DrawTooltip()
 	-- Character gold totals.
 	local total = 0
 	local chardb
-	if self.db.trackByFaction then
+	if self.db.profile.trackByFaction then
 		chardb = self.db.factionrealm
 	else
 		chardb = self.db.realm
