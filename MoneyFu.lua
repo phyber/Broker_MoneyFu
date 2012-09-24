@@ -37,6 +37,7 @@ local defaults = {
 	profile = {
 		style = "GRAPHICAL",
 		trackByRealm = true,
+		trackByFaction = false,
 		simpleTooltip = false,
 		showPerHour = true,
 		minimap = {
@@ -56,6 +57,11 @@ local defaults = {
 		time = {},
 	},
 	faction = {
+		spent = {},
+		gained = {},
+		time = {},
+	},
+	factionrealm = {
 		spent = {},
 		gained = {},
 		time = {},
@@ -91,6 +97,12 @@ local function GetOptions(uiTypes, uiName, appName)
 						db.trackByRealm = not db.trackByRealm
 						Broker_MoneyFu:UpdateData()
 					end,
+				},
+				trackByFaction = {
+					name = L["Faction Specific Cashflow"],
+					desc = L["Show faction-specific cashflow"],
+					type = "toggle",
+					order = 150,
 				},
 				showPerHour = {
 					name = L["Per Hour Cashflow"],
@@ -275,7 +287,11 @@ function Broker_MoneyFu:DrawTooltip()
 		
 		local t
 		if self.db.profile.trackByRealm then
-			t = self.db.realm
+			if self.db.profile.trackByFaction then
+				t = self.db.factionrealm
+			else
+				t = self.db.realm
+			end
 		else
 			t = self.db.char
 		end
@@ -564,19 +580,19 @@ function Broker_MoneyFu:OnEnable()
 			self.db.realm.time[day] = nil
 		end
 	end
-	for day in pairs(self.db.faction.gained) do
+	for day in pairs(self.db.factionrealm.gained) do
 		if day < lastWeek then
-			self.db.faction.gained[day] = nil
+			self.db.factionrealm.gained[day] = nil
 		end
 	end
-	for day in pairs(self.db.faction.spent) do
+	for day in pairs(self.db.factionrealm.spent) do
 		if day < lastWeek then
-			self.db.faction.spent[day] = nil
+			self.db.factionrealm.spent[day] = nil
 		end
 	end
-	for day in pairs(self.db.faction.time) do
+	for day in pairs(self.db.factionrealm.time) do
 		if day < lastWeek then
-			self.db.faction.time[day] = nil
+			self.db.factionrealm.time[day] = nil
 		end
 	end
 	for i = self.lastTime - 6, self.lastTime do
@@ -598,14 +614,14 @@ function Broker_MoneyFu:OnEnable()
 		if not self.db.realm.time[i] then
 			self.db.realm.time[i] = 0
 		end
-		if not self.db.faction.gained[i] then
-			self.db.faction.gained[i] = 0
+		if not self.db.factionrealm.gained[i] then
+			self.db.factionrealm.gained[i] = 0
 		end
-		if not self.db.faction.spent[i] then
-			self.db.faction.spent[i] = 0
+		if not self.db.factionrealm.spent[i] then
+			self.db.factionrealm.spent[i] = 0
 		end
-		if not self.db.faction.time[i] then
-			self.db.faction.time[i] = 0
+		if not self.db.factionrealm.time[i] then
+			self.db.factionrealm.time[i] = 0
 		end
 	end
 	self.gained = 0
@@ -638,18 +654,18 @@ function Broker_MoneyFu:UpdateData()
 		self.db.realm.gained[today - 7] = nil
 		self.db.realm.spent[today - 7] = nil
 		self.db.realm.time[today - 7] = nil
-		self.db.faction.gained[today - 7] = nil
-		self.db.faction.spent[today - 7] = nil
-		self.db.faction.time[today - 7] = nil
+		self.db.factionrealm.gained[today - 7] = nil
+		self.db.factionrealm.spent[today - 7] = nil
+		self.db.factionrealm.time[today - 7] = nil
 		self.db.char.gained[today] = self.db.char.gained[today] or 0
 		self.db.char.spent[today] = self.db.char.spent[today] or 0
 		self.db.char.time[today] = self.db.char.time[today] or 0
 		self.db.realm.gained[today] = self.db.realm.gained[today] or 0
 		self.db.realm.spent[today] = self.db.realm.spent[today] or 0
 		self.db.realm.time[today] = self.db.realm.time[today] or 0
-		self.db.faction.gained[today] = self.db.faction.gained[today] or 0
-		self.db.faction.spent[today] = self.db.faction.spent[today] or 0
-		self.db.faction.time[today] = self.db.faction.time[today] or 0
+		self.db.factionrealm.gained[today] = self.db.factionrealm.gained[today] or 0
+		self.db.factionrealm.spent[today] = self.db.factionrealm.spent[today] or 0
+		self.db.factionrealm.time[today] = self.db.factionrealm.time[today] or 0
 		self.lastTime = today
 	end
 	local current = GetMoney()
@@ -660,12 +676,12 @@ function Broker_MoneyFu:UpdateData()
 		self.gained = (self.gained or 0) + current - self.lastMoney
 		self.db.char.gained[today] = (self.db.char.gained[today] or 0) + current - self.lastMoney
 		self.db.realm.gained[today] = (self.db.realm.gained[today] or 0) + current - self.lastMoney
-		self.db.faction.gained[today] = (self.db.faction.gained[today] or 0) + current - self.lastMoney
+		self.db.factionrealm.gained[today] = (self.db.factionrealm.gained[today] or 0) + current - self.lastMoney
 	elseif self.lastMoney > current then
 		self.spent = (self.spent or 0) + self.lastMoney - current
 		self.db.char.spent[today] = (self.db.char.spent[today] or 0) + self.lastMoney - current
 		self.db.realm.spent[today] = (self.db.realm.spent[today] or 0) + self.lastMoney - current
-		self.db.faction.spent[today] = (self.db.faction.spent[today] or 0) + self.lastMoney - current
+		self.db.factionrealm.spent[today] = (self.db.factionrealm.spent[today] or 0) + self.lastMoney - current
 	end
 	self.lastMoney = current
 	self.db.realm.chars[UnitName("player")] = current
@@ -675,7 +691,7 @@ function Broker_MoneyFu:UpdateData()
 	end
 	self.db.char.time[today] = self.db.char.time[today] + now - self.savedTime
 	self.db.realm.time[today] = self.db.realm.time[today] + now - self.savedTime
-	self.db.faction.time[today] = self.db.faction.time[today] + now - self.savedTime
+	self.db.factionrealm.time[today] = self.db.factionrealm.time[today] + now - self.savedTime
 	self.savedTime = now
 
 	-- Display cashola on tooltip
