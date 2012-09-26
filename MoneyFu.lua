@@ -556,7 +556,6 @@ function Broker_MoneyFu:OnEnable()
 	self.initialMoney = GetMoney()
 	self.lastMoney = self.initialMoney
 	self.lastTime = GetToday(self)
-	self.charFaction = UnitFactionGroup("player")
 	local lastWeek = self.lastTime - 6
 	for day in pairs(self.db.char.gained) do
 		if day < lastWeek then
