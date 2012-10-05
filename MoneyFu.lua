@@ -24,10 +24,12 @@ local string = string
 local tonumber = tonumber
 local GetAddOnMetadata = GetAddOnMetadata
 local string_len = string.len
+local string_format = string.format
 local string_gmatch = string.gmatch
 local string_reverse = string.reverse
 local math_mod = math.fmod
 local math_huge = math.huge
+local math_floor = math.floor
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
 local self, Broker_MoneyFu = Broker_MoneyFu, Broker_MoneyFu
@@ -169,7 +171,7 @@ local function GetOptions(uiTypes, uiName, appName)
 						Broker_MoneyFu.db.factionrealm.chars[value] = nil
 					end,
 					confirm = function(info, value)
-						return string.format("Are you sure you wish to delete '%s'?", value)
+						return string_format("Are you sure you wish to delete '%s'?", value)
 					end,
 					values = function()
 						local t = {}
@@ -187,7 +189,7 @@ local function GetOptions(uiTypes, uiName, appName)
 end
 
 local function CoinString(_, value)
-	if value == math_huge then
+	if value == math_huge or value == -math_huge then
 		value = 0
 	end
 	return GetCoinTextureString(value)
@@ -439,7 +441,7 @@ function Broker_MoneyFu:DrawTooltip()
 			local money = chardb.chars[name]
 			local moneystr = func(abacus, money, true)
 			tooltip:AddLine(
-				string.format("|cffffff00%s|r", name),
+				string_format("|cffffff00%s|r", name),
 				db.showPerHour and " " or moneystr,
 				db.showPerHour and moneystr or " "
 			)
@@ -549,7 +551,7 @@ function Broker_MoneyFu:OnInitialize()
 end
 
 local function GetToday(self)
-	return math.floor((time() / 60 / 60 + self:GetServerOffset()) / 24)
+	return math_floor((time() / 60 / 60 + self:GetServerOffset()) / 24)
 end
 
 function Broker_MoneyFu:OnEnable()
