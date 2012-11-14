@@ -30,6 +30,8 @@ L["Condensed"] = true
 L["Simplified Tooltip"] = true
 L["Per Hour Cashflow"] = true
 L["Show per hour cashflow"] = true
+L["Colour character names by class"] = true
+L["Colour character names in tooltip by class"] = true
 
 L["Minimap Icon"] = true
 L["Toggle minimap icon"] = true

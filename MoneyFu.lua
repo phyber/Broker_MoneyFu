@@ -42,10 +42,11 @@ local defaults = {
 		trackByFaction = false,
 		simpleTooltip = false,
 		showPerHour = true,
+		colourByClass = true,
+		commify = true,
 		minimap = {
 			hide = false,
 		},
-		commify = true,
 	},
 	char = {
 		spent = {},
@@ -54,6 +55,7 @@ local defaults = {
 	},
 	realm = {
 		chars = {},
+		class = {},
 		spent = {},
 		gained = {},
 		time = {},
@@ -65,6 +67,7 @@ local defaults = {
 	},
 	factionrealm = {
 		chars = {},
+		class = {},
 		spent = {},
 		gained = {},
 		time = {},
@@ -132,6 +135,12 @@ local function GetOptions(uiTypes, uiName, appName)
 					},
 					style = "dropdown",
 				},
+				colourByClass = {
+					name = L["Colour character names by class"],
+					desc = L["Colour character names in tooltip by class"],
+					type = "toggle",
+					order = 500,
+				},
 				minimap = {
 					name = L["Minimap Icon"],
 					desc = L["Toggle minimap icon"],
@@ -168,7 +177,9 @@ local function GetOptions(uiTypes, uiName, appName)
 					order = 100,
 					set = function(info, value)
 						Broker_MoneyFu.db.realm.chars[value] = nil
+						Broker_Moneyfu.db.realm.class[value] = nil
 						Broker_MoneyFu.db.factionrealm.chars[value] = nil
+						Broker_Moneyfu.db.factionrealm.class[value] = nil
 					end,
 					confirm = function(info, value)
 						return string_format("Are you sure you wish to delete '%s'?", value)
@@ -440,8 +451,13 @@ function Broker_MoneyFu:DrawTooltip()
 		for _, name in pairs(t) do
 			local money = chardb.chars[name]
 			local moneystr = func(abacus, money, true)
+			local class = chardb.class[name]
+			local classColour = "ffffff00"
+			if self.db.profile.colourByClass and class then
+				classColour = RAID_CLASS_COLORS[class].colorStr
+			end
 			tooltip:AddLine(
-				string_format("|cffffff00%s|r", name),
+				string_format("|c%s%s|r", classColour, name),
 				db.showPerHour and " " or moneystr,
 				db.showPerHour and moneystr or " "
 			)
@@ -638,6 +654,11 @@ function Broker_MoneyFu:OnEnable()
 	self.sessionTime = time()
 	self.savedTime = time()
 
+	local _, localClass = UnitClass("player")
+	self.db.char.localClass = localClass
+	self.db.realm.class[UnitName("player")] = localClass
+	self.db.factionrealm.class[UnitName("player")] = localClass
+
 	self:RegisterEvent("PLAYER_MONEY", "UpdateData")
 	self:RegisterEvent("PLAYER_TRADE_MONEY", "UpdateData")
 	self:RegisterEvent("TRADE_MONEY_CHANGED", "UpdateData")
@@ -646,7 +667,6 @@ function Broker_MoneyFu:OnEnable()
 
 	self:RawHook("OpenCoinPickupFrame", true)
 
-	--self:ScheduleRepeatingEvent("MoneyFuUpdater", self.UpdateTooltip, 60, self)
 	self:UpdateData()
 	dataobj.text = getAbacus()(abacus, self.initialMoney, true)
 end
