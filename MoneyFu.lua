@@ -8,12 +8,7 @@ local dataobj = LDB:NewDataObject("Broker_MoneyFu", {
 	icon = "Interface\\AddOns\\Broker_MoneyFu\\icon.tga",
 })
 local icon = LibStub("LibDBIcon-1.0")
-local NFC = string.format(
-	"|cff%2x%2x%2x%%s|r",
-	NORMAL_FONT_COLOR.r * 255,
-	NORMAL_FONT_COLOR.g * 255,
-	NORMAL_FONT_COLOR.b * 255
-)
+local NORMAL_FONT_COLOR_CODE = NORMAL_FONT_COLOR_CODE
 -- Lovely functions
 local math = math
 local next = next
@@ -23,11 +18,6 @@ local table = table
 local string = string
 local tonumber = tonumber
 local GetAddOnMetadata = GetAddOnMetadata
-local string_len = string.len
-local string_format = string.format
-local string_gmatch = string.gmatch
-local string_reverse = string.reverse
-local math_mod = math.fmod
 local math_huge = math.huge
 local math_floor = math.floor
 
@@ -43,7 +33,6 @@ local defaults = {
 		simpleTooltip = false,
 		showPerHour = true,
 		colourByClass = true,
-		commify = true,
 		minimap = {
 			hide = false,
 		},
@@ -182,7 +171,7 @@ local function GetOptions(uiTypes, uiName, appName)
 						Broker_Moneyfu.db.factionrealm.class[value] = nil
 					end,
 					confirm = function(info, value)
-						return string_format("Are you sure you wish to delete '%s'?", value)
+						return ("Are you sure you wish to delete '%s'?"):format(value)
 					end,
 					values = function()
 						local t = {}
@@ -220,23 +209,6 @@ local function getAbacus()
 	return func
 end
 
-local function commify(num)
-	if not db.commify or string_len(tostring(num)) <= 3 or type(num) ~= "number" then
-		return num
-	end
-	local str = ""
-	local count = 0
-	for d in string_gmatch(string_reverse(tostring(num)), "%d") do
-		if count ~= 0 and math_mod(count, 3) == 0 then
-			str = str .. "," .. d
-		else
-			str = str .. d
-		end
-		count = count + 1
-	end
-	return string_reverse(str)
-end
-
 function Broker_MoneyFu:ResetSession()
 	self.initialMoney = GetMoney()
 	self.sessionTime = time()
@@ -265,7 +237,7 @@ function Broker_MoneyFu:DrawTooltip()
 	local func = getAbacus()
 
 	-- Header
-	tooltip:AddLine(NFC:format(GetAddOnMetadata("Broker_MoneyFu", "Title")))
+	tooltip:AddLine(("%s%s|r"):format(NORMAL_FONT_COLOR_CODE, GetAddOnMetadata("Broker_MoneyFu", "Title")))
 	tooltip:AddLine(" ")
 
 	-- Gold earned stats.
@@ -457,7 +429,7 @@ function Broker_MoneyFu:DrawTooltip()
 				classColour = RAID_CLASS_COLORS[class].colorStr
 			end
 			tooltip:AddLine(
-				string_format("|c%s%s|r", classColour, name),
+				("|c%s%s|r"):format(classColour, name),
 				db.showPerHour and " " or moneystr,
 				db.showPerHour and moneystr or " "
 			)
@@ -743,7 +715,7 @@ function Broker_MoneyFu:GetServerOffset()
 	local utcMinute = tonumber(date("!%M"))
 	local ser = serverHour + serverMinute / 60
 	local utc = utcHour + utcMinute / 60
-	offset = floor((ser - utc) * 2 + 0.5) / 2
+	offset = math_floor((ser - utc) * 2 + 0.5) / 2
 	if offset >= 12 then
 		offset = offset - 24
 	elseif offset < -12 then
