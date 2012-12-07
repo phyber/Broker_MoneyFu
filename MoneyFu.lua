@@ -243,10 +243,10 @@ function Broker_MoneyFu:DrawTooltip()
 
 	-- Header
 	tooltip:AddLine(("%s%s|r"):format(NORMAL_FONT_COLOR_CODE, GetAddOnMetadata("Broker_MoneyFu", "Title")))
-	tooltip:AddLine(" ")
 
 	-- Gold earned stats.
 	if not self.db.profile.simpleTooltip then
+		tooltip:AddLine(" ")
 		-- This session
 		tooltip:AddLine(L["This session"], L["Amount"], L["Per hour"])
 
