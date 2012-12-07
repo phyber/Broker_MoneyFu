@@ -18,8 +18,10 @@ local table = table
 local string = string
 local tonumber = tonumber
 local GetAddOnMetadata = GetAddOnMetadata
+local math_abs = math.abs
 local math_huge = math.huge
 local math_floor = math.floor
+local COLOUR_RED = "ff0000"
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
 local self, Broker_MoneyFu = Broker_MoneyFu, Broker_MoneyFu
@@ -118,6 +120,7 @@ local function GetOptions(uiTypes, uiName, appName)
 					order = 400,
 					values = {
 						GRAPHICAL = L["Graphical"],
+						EXTENDED = L["Extended"],
 						FULL = L["Full"],
 						SHORT = L["Short"],
 						CONDENSED = L["Condensed"],
@@ -189,8 +192,8 @@ local function GetOptions(uiTypes, uiName, appName)
 end
 
 local function CoinString(_, value)
-	if value == math_huge or value == -math_huge then
-		value = 0
+	if value < 0 then
+		return ("|cff%s-%s|r"):format(COLOUR_RED, GetCoinTextureString(math_abs(value)))
 	end
 	return GetCoinTextureString(value)
 end
@@ -199,6 +202,8 @@ local function getAbacus()
 	local func
 	if db.style == "GRAPHICAL" then
 		func = CoinString
+	elseif db.style == "EXTENDED" then
+		func = abacus.FormatMoneyExtended
 	elseif db.style == "CONDENSED" then
 		func = abacus.FormatMoneyCondensed
 	elseif db.style == "SHORT" then

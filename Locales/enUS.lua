@@ -24,6 +24,7 @@ L["Select a character to purge"] = true
 L["Style"] = true
 L["Choose your style"] = true
 L["Graphical"] = true
+L["Extended"] = true
 L["Full"] = true
 L["Short"] = true
 L["Condensed"] = true
