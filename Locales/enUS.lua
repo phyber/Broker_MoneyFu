@@ -41,4 +41,4 @@ L["Session reset."] = true
 L["Characters"] = true
 
 -- Green text
-L["|cff00ff00Click to pick up money|r"] = true
+L["Hint: Click to pick up money"] = true

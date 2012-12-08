@@ -22,6 +22,8 @@ local math_abs = math.abs
 local math_huge = math.huge
 local math_floor = math.floor
 local COLOUR_RED = "ff0000"
+local COLOUR_GREEN = "00ff00"
+local COLOUR_YELLOW = "ffff00"
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
 local self, Broker_MoneyFu = Broker_MoneyFu, Broker_MoneyFu
@@ -191,11 +193,20 @@ local function GetOptions(uiTypes, uiName, appName)
 	end
 end
 
-local function CoinString(_, value)
+local function CoinString(_, value, colourize, textColour)
 	if value < 0 then
-		return ("|cff%s-%s|r"):format(COLOUR_RED, GetCoinTextureString(math_abs(value)))
+		if textColour then
+			return ("|cff%s-%s|r"):format(COLOUR_RED, GetCoinTextureString(math_abs(value)))
+		else
+			return ("-%s"):format(GetCoinTextureString(math_abs(value)))
+		end
 	end
-	return GetCoinTextureString(value)
+	if textColour then
+		if value > 0 then
+			return ("|cff%s%s|r"):format(COLOUR_GREEN, GetCoinTextureString(value))
+		end
+	end
+	return ("%s"):format(GetCoinTextureString(math_abs(value)))
 end
 
 local function getAbacus()
@@ -456,7 +467,7 @@ function Broker_MoneyFu:DrawTooltip()
 	-- Hints
 	--tooltip:SetColumnLayout(2, "LEFT", "LEFT")
 	--tooltip:AddLine(" ")
-	--tooltip:AddLine(ColourText(L["Hint: Click to pick up money"], GREEN))
+	--tooltip:AddLine(("|cff%s%s|r"):format(COLOUR_GREEN, L["Hint: Click to pick up money"]))
 
 	-- Show it
 	--local p, rT, rP, x, y = tooltip:GetPoint()
