@@ -239,6 +239,25 @@ function Broker_MoneyFu:HideTooltip()
 	tooltip:Hide()
 end
 
+--[[
+local function commify(num)
+	if not db.general.commify or type(num) ~= "number" or tostring(num):len() <= 3 then
+		return num
+	end
+	local str = ""
+	local count = 0
+	for d in tostring(num):reverse():gmatch("%d") do
+		if count ~= 0 and count % 3 == 0 then
+			str = str .. "," .. d
+		else
+			str = str .. d
+		end
+		count = count + 1
+	end
+	return str:reverse()
+end
+--]]
+
 function Broker_MoneyFu:DrawTooltip()
 	tooltip:Hide()
 	tooltip:Clear()
@@ -276,7 +295,7 @@ function Broker_MoneyFu:DrawTooltip()
 		tooltip:AddLine(
 			L["|cffffff00Spent|r"],
 			func(abacus, sessionSpent, true),
-			func(abacus, sessionSpentPerHour)
+			func(abacus, sessionSpentPerHour, true)
 		)
 
 		-- This Session: Profit
