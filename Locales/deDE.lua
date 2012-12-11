@@ -39,6 +39,8 @@ L["Condensed"] = "Komprimierter Stil"
 L["Simplified Tooltip"] = "Vereinfachter Tooltip"
 L["Per Hour Cashflow"] = "Einnahme pro Stunde anzeigen"
 L["Show per hour cashflow"] = "Zeige Einnahme pro Stunde"
+L["Colour character names by class"] = "F\195\164rbe Charakter Namen nach Klasse"
+L["Colour character names in tooltip by class"] = "F\195\164rbe Charakter Namen im Tooltip nach Klasse"
 
 L["Minimap Icon"] = "Minikarte Symbol"
 L["Toggle minimap icon"] = "Minikarte Symbol An/Aus"
