@@ -1,4 +1,4 @@
-﻿## Interface: 50100
+﻿## Interface: 50200
 ## Title: Broker: MoneyFu
 ## Title-koKR: Broker: MoneyFu
 ## Notes: Keeps track of current money and all your characters on one realm.

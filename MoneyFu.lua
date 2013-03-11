@@ -12,11 +12,14 @@ local NORMAL_FONT_COLOR_CODE = NORMAL_FONT_COLOR_CODE
 -- Lovely functions
 local math = math
 local next = next
+local time = time
 local type = type
 local pairs = pairs
 local table = table
-local string = string
 local tonumber = tonumber
+local tostring = tostring
+local GetMoney = GetMoney
+local GetCoinText = GetCoinText
 local GetAddOnMetadata = GetAddOnMetadata
 local math_abs = math.abs
 local math_huge = math.huge
@@ -37,6 +40,7 @@ local defaults = {
 		simpleTooltip = false,
 		showPerHour = true,
 		colourByClass = true,
+		commify = true,
 		minimap = {
 			hide = false,
 		},
@@ -194,6 +198,19 @@ local function GetOptions(uiTypes, uiName, appName)
 end
 
 local function CoinString(_, value, colourize, textColour)
+	--[[
+	local coinString = GetCoinTextureString(math_abs(value))
+	if value < 0 then
+		coinString = ("-%s"):format(coinString)
+	end
+	if textColour then
+		if value < 0 then
+			return ("|cff%s%s|r"):format(COLOUR_RED, coinString)
+		end
+		return ("|cff%s%s|r"):format(COLOUR_GREEN, coinString)
+	end
+	return coinString
+	--]]
 	if value < 0 then
 		if textColour then
 			return ("|cff%s-%s|r"):format(COLOUR_RED, GetCoinTextureString(math_abs(value)))
@@ -225,23 +242,8 @@ local function getAbacus()
 	return func
 end
 
-function Broker_MoneyFu:ResetSession()
-	self.initialMoney = GetMoney()
-	self.sessionTime = time()
-	self.gained = 0
-	self.spent = 0
-end
-
-function Broker_MoneyFu:HideTooltip()
-	if MouseIsOver(tooltip) then
-		return
-	end
-	tooltip:Hide()
-end
-
---[[
 local function commify(num)
-	if not db.general.commify or type(num) ~= "number" or tostring(num):len() <= 3 then
+	if not db.commify or type(num) ~= "number" or tostring(num):len() <= 3 then
 		return num
 	end
 	local str = ""
@@ -256,7 +258,40 @@ local function commify(num)
 	end
 	return str:reverse()
 end
---]]
+
+local function addThousandSeparator(moneyStr, money)
+	if db.commify then
+		local hasGold = GetCoinText(money):match("^(%d+) Gold")
+		if hasGold then
+			if db.style ~= "GRAPHICAL" then
+				local colour, gold = moneyStr:match("^(|c........)(%d+)")
+				--print(colour, gold, commify(gold))
+				return moneyStr:gsub(("^%s%d"):format(colour, gold), ("%s%s"):format(colour, commify(tonumber(gold))))
+			else
+				local colour, gold = moneyStr:match("^(|c........)?(%d+)")
+				if not colour then
+					colour = ""
+				end
+				return moneyStr:gsub(("^%s%d"):format(colour, gold), ("%s%s"):format(colour, commify(tonumber(gold))))
+			end
+		end
+	end
+	return moneyStr
+end
+
+function Broker_MoneyFu:ResetSession()
+	self.initialMoney = GetMoney()
+	self.sessionTime = time()
+	self.gained = 0
+	self.spent = 0
+end
+
+function Broker_MoneyFu:HideTooltip()
+	if MouseIsOver(tooltip) then
+		return
+	end
+	tooltip:Hide()
+end
 
 function Broker_MoneyFu:DrawTooltip()
 	tooltip:Hide()
@@ -348,8 +383,8 @@ function Broker_MoneyFu:DrawTooltip()
 		local profitTodayPerHour = profitToday / time[self.lastTime] * 3600
 		tooltip:AddLine(
 			L["|cffffff00Profit|r"],
-			func(abacus, profitToday, true, true),
-			func(abacus, profitTodayPerHour, true, true)
+			addThousandSeparator(func(abacus, profitToday, true, true), profitToday),
+			addThousandSeparator(func(abacus, profitTodayPerHour, true, true), profitTodayPerHour)
 		)
 
 		-- Yesterday
@@ -422,10 +457,11 @@ function Broker_MoneyFu:DrawTooltip()
 
 		-- Profit
 		local profit = weekGained - weekSpent
+		local profitWeekPerHour = profit / weekTime * 3600
 		tooltip:AddLine(
 			L["|cffffff00Profit|r"],
-			func(abacus, profit, true, true),
-			func(abacus, profit / weekTime * 3600, true, true)
+			addThousandSeparator(func(abacus, profit, true, true), profit),
+			addThousandSeparator(func(abacus, profitWeekPerHour, true, true), profitWeekPerHour)
 		)
 	end
 
@@ -675,7 +711,7 @@ function Broker_MoneyFu:OnEnable()
 	self:RawHook("OpenCoinPickupFrame", true)
 
 	self:UpdateData()
-	dataobj.text = getAbacus()(abacus, self.initialMoney, true)
+	dataobj.text = addThousandSeparator(getAbacus()(abacus, self.initialMoney, true), self.initialMoney)
 end
 
 function Broker_MoneyFu:UpdateData()
@@ -732,7 +768,7 @@ function Broker_MoneyFu:UpdateData()
 	self.savedTime = now
 
 	-- Display cashola on tooltip
-	dataobj.text = getAbacus()(abacus, current, true)
+	dataobj.text = addThousandSeparator(getAbacus()(abacus, current, true), current)
 end
 
 function Broker_MoneyFu:OpenCoinPickupFrame(multiplier, maxMoney, parent)
