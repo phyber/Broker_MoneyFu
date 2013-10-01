@@ -206,6 +206,10 @@ local function CoinString(_, value, colourize, textColour)
 			return ("|cff%s%s|r"):format(COLOUR_GREEN, GetCoinTextureString(value))
 		end
 	end
+	-- No idea how this happens.
+	if value == math_huge then
+		return ("%s"):format(GetCoinTextureString(0))
+	end
 	return ("%s"):format(GetCoinTextureString(math_abs(value)))
 end
 
