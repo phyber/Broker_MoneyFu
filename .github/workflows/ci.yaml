@@ -64,12 +64,12 @@ jobs:
             -g 1.13.2
       # Release Retail Addon only on WoWInterface, as CurseForge is handled
       # elsewhere.
-      - name: 'Release Retail Addon'
-        env:
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
-        run: |
-          /tmp/release.sh \
-            -d \
-            -l \
-            -u
+      #- name: 'Release Retail Addon'
+      #  env:
+      #    GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+      #    WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+      #  run: |
+      #    /tmp/release.sh \
+      #      -d \
+      #      -l \
+      #      -u
