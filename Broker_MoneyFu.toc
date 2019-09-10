@@ -16,6 +16,7 @@
 ## SavedVariablesPerCharacter: Broker_MoneyFuCharDB
 ## Version: @project-version@
 ## X-Category: Interface Enhancements
+## X-Curse-Project-ID: 33086
 
 #@no-lib-strip@
 embeds.xml
