@@ -1,4 +1,9 @@
+#@retail@
 ## Interface: 80200
+#@end-retail@
+#@non-retail@
+# ## Interface: 11302
+#@end-non-retail@
 ## Title: Broker: MoneyFu
 ## Title-koKR: Broker: MoneyFu
 ## Notes: Keeps track of current money and all your characters on one realm.
