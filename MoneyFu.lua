@@ -12,10 +12,8 @@ local NORMAL_FONT_COLOR_CODE = NORMAL_FONT_COLOR_CODE
 -- Lovely functions
 local math = math
 local next = next
-local type = type
 local pairs = pairs
 local table = table
-local string = string
 local tonumber = tonumber
 local GetAddOnMetadata = GetAddOnMetadata
 local math_abs = math.abs
@@ -23,10 +21,9 @@ local math_huge = math.huge
 local math_floor = math.floor
 local COLOUR_RED = "ff0000"
 local COLOUR_GREEN = "00ff00"
-local COLOUR_YELLOW = "ffff00"
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
-local self, Broker_MoneyFu = Broker_MoneyFu, Broker_MoneyFu
+local Broker_MoneyFu = Broker_MoneyFu
 local db
 local tooltip
 local defaults = {
@@ -171,9 +168,7 @@ local function GetOptions(uiTypes, uiName, appName)
 					order = 100,
 					set = function(info, value)
 						Broker_MoneyFu.db.realm.chars[value] = nil
-						Broker_Moneyfu.db.realm.class[value] = nil
 						Broker_MoneyFu.db.factionrealm.chars[value] = nil
-						Broker_Moneyfu.db.factionrealm.class[value] = nil
 					end,
 					confirm = function(info, value)
 						return ("Are you sure you wish to delete '%s'?"):format(value)
@@ -272,7 +267,6 @@ function Broker_MoneyFu:DrawTooltip()
 	self.db.realm.time[today] = self.db.realm.time[today] + now - self.savedTime
 	self.savedTime = now
 
-	local linenum
 	local func = getAbacus()
 
 	-- Header
@@ -310,7 +304,7 @@ function Broker_MoneyFu:DrawTooltip()
 			func(abacus, sessionProfit, true, true),
 			func(abacus, sessionProfitPerHour, true, true)
 		)
-		
+
 		local t
 		if self.db.profile.trackByRealm then
 			if self.db.profile.trackByFaction then
@@ -474,7 +468,6 @@ function Broker_MoneyFu:DrawTooltip()
 			)
 			total = total + money
 		end
-		t = nil
 	else
 		total = chardb.chars[UnitName("player")]
 	end
