@@ -50,16 +50,16 @@ jobs:
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          uses: 'BigWigsMods/packager@v1'
-          with:
-            args: '-l -u -g bcc'
+        uses: 'BigWigsMods/packager@v1'
+        with:
+          args: '-l -u -g bcc'
       - name: 'Release Classic Addon'
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          uses: 'BigWigsMods/packager@v1'
-          with:
-            args: '-l -u -g classic'
+        uses: 'BigWigsMods/packager@v1'
+        with:
+          args: '-l -u -g classic'
       # Release Retail Addon only on WoWInterface, as CurseForge is handled
       # elsewhere.
       #- name: 'Release Retail Addon'
