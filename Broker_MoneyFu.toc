@@ -1,7 +1,8 @@
-## Interface: 100000
-## Interface-Retail: 100000
-## Interface-Classic: 11307
-## Interface-BCC: 20501
+## Interface: 100002
+## Interface-Retail: 100002
+## Interface-Classic: 11403
+## Interface-BCC: 20504
+## Interface-Wrath: 30400
 ## Title: Broker: MoneyFu
 ## Title-koKR: Broker: MoneyFu
 ## Notes: Keeps track of current money and all your characters on one realm.
