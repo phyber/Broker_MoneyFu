@@ -40,6 +40,9 @@ read_globals = {
     -- Libraries
     "LibStub",
 
+    -- C modules
+    "C_AddOns",
+
     -- API Functions
     "date",
     "time",
@@ -63,4 +66,5 @@ read_globals = {
 
     -- Frames
     "CoinPickupFrame",
+    "Settings",
 }

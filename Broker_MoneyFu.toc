@@ -1,7 +1,7 @@
-## Interface: 100002
-## Interface-Retail: 100002
+## Interface: 110002
 ## Interface-Classic: 11403
 ## Interface-BCC: 20504
+## Interface-Retail: 110002
 ## Interface-Wrath: 30400
 ## Title: Broker: MoneyFu
 ## Title-koKR: Broker: MoneyFu
