@@ -10,19 +10,26 @@ local dataobj = LDB:NewDataObject("Broker_MoneyFu", {
 	icon = "Interface\\AddOns\\Broker_MoneyFu\\icon.tga",
 })
 
+local COLOUR_RED = "ff0000"
+local COLOUR_GREEN = "00ff00"
 local NORMAL_FONT_COLOR_CODE = NORMAL_FONT_COLOR_CODE
+
 -- Lovely functions
 local math = math
+local math_abs = math.abs
+local math_huge = math.huge
+local math_floor = math.floor
 local next = next
 local pairs = pairs
 local table = table
 local tonumber = tonumber
+local FetchDepositedMoney = C_Bank and C_Bank.FetchDepositedMoney or nil
 local GetAddOnMetadata = _G.GetAddOnMetadata or C_AddOns.GetAddOnMetadata
-local math_abs = math.abs
-local math_huge = math.huge
-local math_floor = math.floor
-local COLOUR_RED = "ff0000"
-local COLOUR_GREEN = "00ff00"
+
+local BANK_TYPE_WARBANK
+if Enum and Enum.BankType then
+    BANK_TYPE_WARBANK = Enum.BankType.Account
+end
 
 Broker_MoneyFu = LibStub("AceAddon-3.0"):NewAddon("Broker_MoneyFu", "AceEvent-3.0", "AceHook-3.0")
 local Broker_MoneyFu = Broker_MoneyFu
@@ -503,6 +510,22 @@ function Broker_MoneyFu:DrawTooltip()
 	else
 		total = chardb.chars[UnitName("player")]
 	end
+
+    -- Warbank
+    -- Only attempt to do this if we're pretty sure we're in a version of WoW
+    -- with a Warbank.
+    if FetchDepositedMoney and BANK_TYPE_WARBANK then
+        local warbankValue = FetchDepositedMoney(BANK_TYPE_WARBANK)
+
+        tooltip:AddLine(" ")
+        tooltip:AddLine(
+            L["Warbank"],
+            db.showPerHour and " " or func(abacus, warbankValue, true),
+            db.showPerHour and func(abacus, warbankValue, true) or " "
+        )
+
+        total = total + warbankValue
+    end
 
 	-- Total
 	tooltip:AddLine(" ")

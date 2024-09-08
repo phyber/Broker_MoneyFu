@@ -42,6 +42,7 @@ read_globals = {
 
     -- C modules
     "C_AddOns",
+    "C_Bank",
 
     -- API Functions
     "date",
@@ -57,6 +58,9 @@ read_globals = {
     "OpenCoinPickupFrame",
     "UnitClass",
     "UnitName",
+
+    -- Enums
+    "Enum",
 
     -- FrameXML Globals
     "HONOR_THIS_SESSION",
